@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Camera Background</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        /* background-color: black; */
+        background-size: cover;
+        background-position: cover;
+        background-repeat: no-repeat;
+      }
+
+      #camera {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        visibility: hidden;
+      }
+
+      #mirror-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="camera" autoplay></video>
+    <h1 id="mirror-text">пользователь видит своё отражение</h1>
+
+    <script>
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then(function (stream) {
+          var video = document.getElementById("camera");
+          video.srcObject = stream;
+          video.onloadedmetadata = function (e) {
+            video.play();
+          };
+          var canvas = document.createElement("canvas");
+          var context = canvas.getContext("2d");
+          setInterval(function () {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var imageDataURL = canvas.toDataURL();
+            document.body.style.backgroundImage = "url(" + imageDataURL + ")";
+          }, 10);
+        })
+        .catch(function (err) {
+          console.log("Error: " + err);
+        });
+    </script>
+  </body>
+</html>
